@@ -1,101 +1,75 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { getDeals } from '../api/client'
+import { getDeals, getInventory } from './client'
+import { TrendingUp, Car, FileText, DollarSign } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { Plus, Search } from 'lucide-react'
 
-const statusColors = {
-  'In progress': 'bg-yellow-100 text-yellow-700',
-  Pending: 'bg-blue-100 text-blue-700',
-  Funded: 'bg-green-100 text-green-700',
-  Dead: 'bg-red-100 text-red-600',
+function MetricCard({ label, value, sub, icon: Icon, color }) {
+  return (
+    <div className="bg-white rounded-xl border border-gray-100 p-5">
+      <div className="flex items-start justify-between">
+        <div>
+          <div className="text-xs text-gray-500 font-medium uppercase tracking-wide mb-1">{label}</div>
+          <div className="text-2xl font-bold text-gray-900">{value}</div>
+          {sub && <div className="text-xs text-gray-400 mt-1">{sub}</div>}
+        </div>
+        <div className={`p-2.5 rounded-lg ${color}`}>
+          <Icon size={18} className="text-white" />
+        </div>
+      </div>
+    </div>
+  )
 }
 
-export default function Deals() {
-  const [search, setSearch] = useState('')
-  const [filter, setFilter] = useState('all')
+export default function Dashboard() {
+  const { data: deals = [] } = useQuery({ queryKey: ['deals'], queryFn: () => getDeals().then(r => r.data) })
+  const { data: inventory = [] } = useQuery({ queryKey: ['inventory'], queryFn: () => getInventory().then(r => r.data) })
 
-  const { data: deals = [], isLoading } = useQuery({
-    queryKey: ['deals'],
-    queryFn: () => getDeals().then(r => r.data)
-  })
-
-  const filtered = deals.filter(d => {
-    const name = `${d.customer_first} ${d.customer_last} ${d.vehicle_name} ${d.deal_num}`.toLowerCase()
-    const matchSearch = !search || name.includes(search.toLowerCase())
-    const matchFilter = filter === 'all' || d.status === filter
-    return matchSearch && matchFilter
-  })
+  const now = new Date()
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+  const mtdDeals = deals.filter(d => d.status === 'Funded' && new Date(d.created_at) >= startOfMonth)
+  const mtdGross = mtdDeals.reduce((s, d) => s + (d.total_gross || 0), 0)
+  const inProgress = deals.filter(d => d.status === 'In progress').length
+  const available = inventory.filter(v => v.status === 'Available').length
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-xl font-bold text-gray-900">All Deals</h1>
-          <p className="text-sm text-gray-500">{deals.length} total deals</p>
-        </div>
-        <Link
-          to="/deals/new"
-          className="flex items-center gap-2 bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors"
-        >
-          <Plus size={16} /> New deal
-        </Link>
+    <div className="p-6 max-w-6xl mx-auto">
+      <div className="mb-6">
+        <h1 className="text-xl font-bold text-gray-900">Dashboard</h1>
+        <p className="text-sm text-gray-500">{now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</p>
       </div>
-
-      <div className="flex gap-3 mb-5">
-        <div className="relative flex-1 max-w-xs">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search deals..." className="pl-8" />
-        </div>
-        <div className="flex gap-2">
-          {['all', 'In progress', 'Pending', 'Funded', 'Dead'].map(s => (
-            <button key={s} onClick={() => setFilter(s)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${filter === s ? 'bg-gray-900 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
-              {s === 'all' ? 'All' : s}
-            </button>
-          ))}
-        </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <MetricCard label="MTD Units" value={mtdDeals.length} sub="Funded this month" icon={TrendingUp} color="bg-blue-500" />
+        <MetricCard label="MTD Gross" value={`$${mtdGross.toLocaleString()}`} sub="Total gross profit" icon={DollarSign} color="bg-green-500" />
+        <MetricCard label="In Progress" value={inProgress} sub="Active deals" icon={FileText} color="bg-yellow-500" />
+        <MetricCard label="Available" value={available} sub="Units in stock" icon={Car} color="bg-purple-500" />
       </div>
-
-      <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
-        {isLoading ? (
-          <div className="p-8 text-center text-gray-400">Loading...</div>
-        ) : filtered.length === 0 ? (
-          <div className="p-8 text-center text-gray-400">No deals found</div>
+      <div className="bg-white rounded-xl border border-gray-100">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+          <h2 className="font-semibold text-gray-900">Recent deals</h2>
+          <Link to="/deals" className="text-sm text-blue-500 hover:underline">View all →</Link>
+        </div>
+        {deals.length === 0 ? (
+          <div className="p-8 text-center text-gray-400 text-sm">No deals yet</div>
         ) : (
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-gray-100">
-                <th className="text-left text-xs font-medium text-gray-500 px-5 py-3">Customer</th>
-                <th className="text-left text-xs font-medium text-gray-500 px-4 py-3">Vehicle</th>
-                <th className="text-left text-xs font-medium text-gray-500 px-4 py-3">Deal #</th>
-                <th className="text-left text-xs font-medium text-gray-500 px-4 py-3">Type</th>
-                <th className="text-left text-xs font-medium text-gray-500 px-4 py-3">OTD</th>
-                <th className="text-left text-xs font-medium text-gray-500 px-4 py-3">Gross</th>
-                <th className="text-left text-xs font-medium text-gray-500 px-4 py-3">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50">
-              {filtered.map(deal => (
-                <tr key={deal.deal_num} className="hover:bg-gray-50 cursor-pointer" onClick={() => window.location.href = `/deals/${deal.deal_num}`}>
-                  <td className="px-5 py-3.5">
-                    <div className="text-sm font-medium text-gray-900">{deal.customer_first} {deal.customer_last}</div>
-                    <div className="text-xs text-gray-400">{new Date(deal.created_at).toLocaleDateString()}</div>
-                  </td>
-                  <td className="px-4 py-3.5 text-sm text-gray-600">{deal.vehicle_name}</td>
-                  <td className="px-4 py-3.5 text-sm text-gray-500 font-mono">{deal.deal_num}</td>
-                  <td className="px-4 py-3.5 text-sm text-gray-500">{deal.deal_type}</td>
-                  <td className="px-4 py-3.5 text-sm font-medium">${(deal.otd || 0).toLocaleString()}</td>
-                  <td className="px-4 py-3.5 text-sm text-green-600 font-medium">${(deal.total_gross || 0).toLocaleString()}</td>
-                  <td className="px-4 py-3.5">
-                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${statusColors[deal.status] || 'bg-gray-100 text-gray-500'}`}>
-                      {deal.status}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="divide-y divide-gray-50">
+            {deals.slice(0, 5).map(deal => (
+              <Link key={deal.deal_num} to={`/deals/${deal.deal_num}`}
+                className="flex items-center justify-between px-5 py-3.5 hover:bg-gray-50 transition-colors">
+                <div>
+                  <div className="text-sm font-medium text-gray-900">{deal.customer_first} {deal.customer_last}</div>
+                  <div className="text-xs text-gray-400">{deal.vehicle_name} · {deal.deal_num}</div>
+                </div>
+                <div className="text-right">
+                  <div className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                    deal.status === 'Funded' ? 'bg-green-100 text-green-700' :
+                    deal.status === 'Pending' ? 'bg-blue-100 text-blue-700' : 'bg-yellow-100 text-yellow-700'
+                  }`}>{deal.status}</div>
+                  <div className="text-xs text-gray-400 mt-0.5">${(deal.total_gross || 0).toLocaleString()} gross</div>
+                </div>
+              </Link>
+            ))}
+          </div>
         )}
       </div>
     </div>

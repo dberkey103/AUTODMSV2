@@ -9,6 +9,7 @@ export default function Login() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [loggedIn, setLoggedIn] = useState(false)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -16,12 +17,39 @@ export default function Login() {
     setLoading(true)
     try {
       await login(username, password)
-      navigate('/')
+      setLoggedIn(true)
     } catch {
       setError('Invalid username or password')
     } finally {
       setLoading(false)
     }
+  }
+
+  if (loggedIn) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="w-full max-w-sm">
+          <div className="text-center mb-8">
+            <h1 className="text-2xl font-bold text-gray-900">AutoDMS</h1>
+            <p className="text-sm text-gray-500 mt-1">Where would you like to go?</p>
+          </div>
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 flex flex-col gap-4">
+            <button
+              onClick={() => navigate('/')}
+              className="w-full bg-blue-500 text-white py-3 rounded-lg font-medium text-lg hover:bg-blue-600 transition-colors"
+            >
+              Sales
+            </button>
+            <button
+              onClick={() => navigate('/service')}
+              className="w-full bg-gray-800 text-white py-3 rounded-lg font-medium text-lg hover:bg-gray-700 transition-colors"
+            >
+              Service
+            </button>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (

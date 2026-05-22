@@ -1,26 +1,29 @@
-import React, { createContext, useContext, useState, useEffect } from 'react'
-import { login as apiLogin, logout as apiLogout, getMe } from './client'
+import React, { createContext, useContext, useState } from 'react'
+import { login as apiLogin, logout as apiLogout } from './client'
 
 const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    getMe()
-      .then(r => setUser(r.data))
-      .catch(() => setUser(null))
-      .finally(() => setLoading(false))
-  }, [])
+  const [user, setUser] = useState(() => {
+    try {
+      const stored = localStorage.getItem('autodms_user')
+      return stored ? JSON.parse(stored) : null
+    } catch {
+      return null
+    }
+  })
+  const [loading] = useState(false)
 
   const login = async (username, password) => {
     const r = await apiLogin(username, password)
-    setUser(r.data.user)
+    const userData = r.data.user
+    localStorage.setItem('autodms_user', JSON.stringify(userData))
+    setUser(userData)
   }
 
   const logout = async () => {
     await apiLogout()
+    localStorage.removeItem('autodms_user')
     setUser(null)
   }
 

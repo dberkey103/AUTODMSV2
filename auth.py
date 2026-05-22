@@ -9,18 +9,16 @@ class LoginRequest(BaseModel):
     password: str
 
 @router.post("/login")
-def login(req: LoginRequest, response: Response):
+def login(req: LoginRequest):
     res = supabase.table("users").select("*").eq("username", req.username).eq("password", req.password).eq("active", True).execute()
     if not res.data:
         raise HTTPException(status_code=401, detail="Invalid credentials")
     user = res.data[0]
     user.pop("password", None)
-    response.set_cookie("user_id", str(user["id"]), httponly=True, samesite="lax")
     return {"success": True, "user": user}
 
 @router.post("/logout")
-def logout(response: Response):
-    response.delete_cookie("user_id")
+def logout():
     return {"success": True}
 
 @router.get("/me")

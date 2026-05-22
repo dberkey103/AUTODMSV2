@@ -1,6 +1,34 @@
-import React from 'react'
-import { useParams } from 'react-router-dom'
-export default function DealDesk() {
-  const { dealNum } = useParams()
-  return <div className="p-6"><h1 className="text-xl font-bold">Deal Desk</h1><p className="text-gray-500 mt-1">{dealNum ? `Deal: ${dealNum}` : 'New Deal'}</p></div>
+import React, { createContext, useContext, useState, useEffect } from 'react'
+import { login as apiLogin, logout as apiLogout, getMe } from './client'
+
+const AuthContext = createContext(null)
+
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    getMe()
+      .then(r => setUser(r.data))
+      .catch(() => setUser(null))
+      .finally(() => setLoading(false))
+  }, [])
+
+  const login = async (username, password) => {
+    const r = await apiLogin(username, password)
+    setUser(r.data.user)
+  }
+
+  const logout = async () => {
+    await apiLogout()
+    setUser(null)
+  }
+
+  return (
+    <AuthContext.Provider value={{ user, loading, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  )
 }
+
+export const useAuth = () => useContext(AuthContext)

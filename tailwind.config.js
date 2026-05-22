@@ -1,14 +1,12 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-
-export default defineConfig({
-  plugins: [react()],
-  server: {
-    proxy: {
-      '/api': {
-        target: 'http://localhost:8000',
-        changeOrigin: true,
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: ['./index.html', './*.{js,ts,jsx,tsx}'],
+  theme: {
+    extend: {
+      colors: {
+        accent: '#378ADD',
       }
-    }
-  }
-})
+    },
+  },
+  plugins: [],
+}

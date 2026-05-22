@@ -1,12 +1,13 @@
 import React, { useState } from 'react'
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from './AuthContext'
-import { LayoutDashboard, Car, FileText, Wrench, Users, LogOut, Menu, X } from 'lucide-react'
+import { LayoutDashboard, Car, FileText, Wrench, Users, LogOut, Menu, X, Calculator } from 'lucide-react'
 
 const navItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard', end: true },
   { to: '/inventory', icon: Car, label: 'Inventory' },
   { to: '/deals', icon: FileText, label: 'Deals' },
+  { to: '/desk', icon: Calculator, label: 'Desk' },
   { to: '/service', icon: Wrench, label: 'Service' },
   { to: '/users', icon: Users, label: 'Users' },
 ]

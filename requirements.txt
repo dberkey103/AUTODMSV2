@@ -4,4 +4,4 @@ supabase==2.5.0
 requests==2.31.0
 python-multipart==0.0.9
 pydantic==2.5.0
-pydantic-core==2.14.5
+pydantic-core==2.14.1

@@ -6,8 +6,10 @@ import Layout from './Layout'
 import Dashboard from './Dashboard'
 import Inventory from './Inventory'
 import VehicleDetail from './VehicleDetail'
+import StockIn from './StockIn'
 import Deals from './Deals'
 import DealDesk from './DealDesk'
+import DeskCalculator from './DeskCalculator'
 import Service from './Service'
 import Users from './Users'
 
@@ -25,10 +27,12 @@ function AppRoutes() {
       <Route path="/" element={<PrivateRoute><Layout /></PrivateRoute>}>
         <Route index element={<Dashboard />} />
         <Route path="inventory" element={<Inventory />} />
+        <Route path="inventory/new" element={<StockIn />} />
         <Route path="inventory/:id" element={<VehicleDetail />} />
         <Route path="deals" element={<Deals />} />
-        <Route path="deals/:dealNum" element={<DealDesk />} />
         <Route path="deals/new" element={<DealDesk />} />
+        <Route path="deals/:dealNum" element={<DealDesk />} />
+        <Route path="desk" element={<DeskCalculator />} />
         <Route path="service" element={<Service />} />
         <Route path="users" element={<Users />} />
       </Route>

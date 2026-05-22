@@ -1,34 +1,32 @@
-from fastapi import APIRouter, HTTPException, Response, Request
-from pydantic import BaseModel
-from database import supabase
+from fastapi import APIRouter, HTTPException, Request
+import requests
+import os
 
 router = APIRouter()
 
-class LoginRequest(BaseModel):
-    username: str
-    password: str
+CARSXE_KEY = os.environ.get("CARSXE_KEY", "")
 
-@router.post("/login")
-def login(req: LoginRequest, response: Response):
-    res = supabase.table("users").select("*").eq("username", req.username).eq("password", req.password).eq("active", True).execute()
-    if not res.data:
-        raise HTTPException(status_code=401, detail="Invalid credentials")
-    user = res.data[0]
-    user.pop("password", None)
-    response.set_cookie("user_id", str(user["id"]), httponly=True, samesite="lax")
-    return {"success": True, "user": user}
-
-@router.post("/logout")
-def logout(response: Response):
-    response.delete_cookie("user_id")
-    return {"success": True}
-
-@router.get("/me")
-def me(request: Request):
+@router.get("/{vin}")
+def decode_vin(vin: str, request: Request):
     user_id = request.cookies.get("user_id")
     if not user_id:
         raise HTTPException(status_code=401, detail="Not authenticated")
-    res = supabase.table("users").select("id,first,last,username,role,active").eq("id", user_id).execute()
-    if not res.data:
-        raise HTTPException(status_code=401, detail="User not found")
-    return res.data[0]
+    if CARSXE_KEY:
+        try:
+            res = requests.get(
+                f"https://api.carsxe.com/specs?key={CARSXE_KEY}&vin={vin}",
+                timeout=5
+            )
+            data = res.json()
+            if data.get("success") and data.get("attributes"):
+                return {"source": "carsxe", "data": data["attributes"]}
+        except Exception as e:
+            print(f"CarsXE failed: {e}")
+    try:
+        res = requests.get(
+            f"https://vpic.nhtsa.dot.gov/api/vehicles/decodevin/{vin}?format=json",
+            timeout=5
+        )
+        return {"source": "nhtsa", "data": res.json()}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

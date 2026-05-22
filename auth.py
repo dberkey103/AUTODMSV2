@@ -1,55 +1,34 @@
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Response, Request
 from pydantic import BaseModel
-from typing import Optional, List
 from database import supabase
 
 router = APIRouter()
 
-class RORequest(BaseModel):
-    ro_num: str
-    vehicle_id: Optional[int] = None
-    customer_name: Optional[str] = ""
-    vin: Optional[str] = ""
-    year: Optional[int] = None
-    make: Optional[str] = ""
-    model: Optional[str] = ""
-    trim: Optional[str] = ""
-    miles: Optional[str] = ""
-    advisor: Optional[str] = ""
-    tech: Optional[str] = ""
-    jobs: Optional[list] = []
-    status: str = "Open"
-    notes: Optional[str] = ""
-    promise_date: Optional[str] = ""
+class LoginRequest(BaseModel):
+    username: str
+    password: str
 
-@router.get("/")
-def get_ros(request: Request):
-    user_id = request.cookies.get("user_id")
-    if not user_id:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    res = supabase.table("repair_orders").select("*").order("created_at", desc=True).execute()
-    return res.data
+@router.post("/login")
+def login(req: LoginRequest, response: Response):
+    res = supabase.table("users").select("*").eq("username", req.username).eq("password", req.password).eq("active", True).execute()
+    if not res.data:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    user = res.data[0]
+    user.pop("password", None)
+    response.set_cookie("user_id", str(user["id"]), httponly=True, samesite="lax")
+    return {"success": True, "user": user}
 
-@router.post("/")
-def save_ro(ro: RORequest, request: Request):
-    user_id = request.cookies.get("user_id")
-    if not user_id:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    res = supabase.table("repair_orders").upsert(ro.dict(), on_conflict="ro_num").execute()
-    return res.data[0]
-
-@router.put("/{ro_num}")
-def update_ro(ro_num: str, data: dict, request: Request):
-    user_id = request.cookies.get("user_id")
-    if not user_id:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    res = supabase.table("repair_orders").update(data).eq("ro_num", ro_num).execute()
-    return res.data[0]
-
-@router.delete("/{ro_num}")
-def delete_ro(ro_num: str, request: Request):
-    user_id = request.cookies.get("user_id")
-    if not user_id:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    supabase.table("repair_orders").delete().eq("ro_num", ro_num).execute()
+@router.post("/logout")
+def logout(response: Response):
+    response.delete_cookie("user_id")
     return {"success": True}
+
+@router.get("/me")
+def me(request: Request):
+    user_id = request.cookies.get("user_id")
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    res = supabase.table("users").select("id,first,last,username,role,active").eq("id", user_id).execute()
+    if not res.data:
+        raise HTTPException(status_code=401, detail="User not found")
+    return res.data[0]

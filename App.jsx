@@ -27,13 +27,25 @@ function PrivateRoute() {
   return user ? <Outlet /> : <Navigate to="/login" replace />
 }
 
+function PublicRoute() {
+  const { user, loading } = useAuth()
+  if (loading) return (
+    <div className="flex items-center justify-center h-screen text-sm text-gray-400">
+      Loading…
+    </div>
+  )
+  return user ? <Navigate to="/select" replace /> : <Outlet />
+}
+
 export default function App() {
   return (
     <QueryClientProvider client={qc}>
       <AuthProvider>
         <BrowserRouter>
           <Routes>
-            <Route path="/login" element={<Login />} />
+            <Route element={<PublicRoute />}>
+              <Route path="/login" element={<Login />} />
+            </Route>
             <Route element={<PrivateRoute />}>
               <Route path="/select" element={<ModuleSelector />} />
               <Route path="/sales" element={<Layout module="sales" />}>
@@ -55,7 +67,7 @@ export default function App() {
               </Route>
               <Route path="/" element={<Navigate to="/select" replace />} />
             </Route>
-            <Route path="*" element={<Navigate to="/select" replace />} />
+            <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>
         </BrowserRouter>
       </AuthProvider>

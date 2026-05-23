@@ -6,7 +6,7 @@ app = FastAPI(title="CARSATION DMS API", version="2.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://autodmsv2.onrender.com"],
+    allow_origins=["https://autodmsv-2.vercel.app"],
     allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],

@@ -1,0 +1,157 @@
+# Instructions for Claude Code â€” CARSATION DMS
+
+**Project:** CARSATION DMS (Dealer Management System)
+**Owner:** Duane Berkey â€” Carsation LLC, Bridgeport CT
+**Repo:** https://github.com/dberkey103/AUTODMSV2
+
+---
+
+## READ THIS FIRST EVERY SESSION
+
+**Before doing any work in this repo, read `WORKFLOWS.md` in the root of this repo.** It is the source of truth for all business logic, data models, user flows, and feature specs for the CARSATION DMS.
+
+When a task is ambiguous, when a data field is missing, or when something isn't covered in `WORKFLOWS.md`, **stop and ask Duane** â€” do not guess or invent business logic.
+
+---
+
+## Live URLs
+
+- **Frontend (Vercel):** https://autodmsv-2.vercel.app
+- **Backend (Render):** https://autodmsv2.onrender.com
+- **Database (Supabase):** https://owuvfxarzktcmrueculg.supabase.co
+
+---
+
+## Tech Stack
+
+- **Frontend:** React + Vite + Tailwind CSS
+- **Backend:** Python FastAPI
+- **Database:** Supabase (PostgreSQL)
+- **Auth:** bcrypt, JWT, RBAC
+- **Deployment:** Vercel (frontend) + Render (backend)
+
+---
+
+## Project Structure Rules
+
+- **All Python backend code lives in `/backend`** (or root for legacy files â€” confirm before moving)
+- **All React frontend code lives in `/frontend`** (or root for legacy files â€” confirm before moving)
+- **Never paste GitHub tokens, API keys, or secrets into chat or code.** Use environment variables.
+- **All code changes are pushed through Claude Code** â€” Duane does not edit files manually except small fixes in GitHub UI.
+
+---
+
+## Render Deploy Settings (Backend)
+
+- **Build command:** `pip install -r backend/render-requirements.txt`
+- **Start command:** `uvicorn backend.main:app --host 0.0.0.0 --port $PORT`
+
+---
+
+## Authentication & Roles
+
+- **Test login:** `admin` / `admin123`
+- **Roles (RBAC):** Owner/Admin, Manager, Salesperson, Service Advisor, Technician, Accounting, Read Only
+- **Password storage:** bcrypt â€” never plaintext
+- **All sensitive actions must be logged to the activity log table**
+
+---
+
+## Branding (Do Not Deviate)
+
+- **Product name:** CARSATION DMS
+- **UI theme:** Black background, **red (#E31837) accents**
+- All new UI components must match this theme
+
+---
+
+## Module Map
+
+**Sales side:**
+- Inventory (`Inventory.jsx`, `inventory.py`, `VehicleDetail.jsx`, `StockIn.jsx`)
+- Deals (`Deals.jsx`, `DealDesk.jsx`, `DeskCalculator.jsx`, `deals.py`)
+- CRM (`CRM.jsx`)
+- Dashboard (`Dashboard.jsx`)
+
+**Service side:**
+- Repair Orders (`Service.jsx`, `ServiceList.jsx`, `ROForm.jsx`)
+
+**System:**
+- Auth (`AuthContext.jsx`, `Login.jsx`, `auth.py`, `users.py`)
+- Users / Permissions (`Users.jsx`)
+- VIN decode (`vin.py`, `client.js`)
+- Tax (`tax.py`)
+- Module selector (`ModuleSelector.jsx`)
+- Layout (`Layout.jsx`)
+
+---
+
+## Coding Conventions
+
+- **Database queries:** Use Supabase client; respect Row-Level Security
+- **Sensitive data (SSN, DOB, DL#):** Encrypt at rest; never log to console; never expose in API responses except to authorized roles
+- **API endpoints:** All routes require authentication except `/login` and `/health`
+- **Error handling:** Return structured errors with status codes; never expose stack traces in production
+- **Naming:** snake_case for Python, camelCase for JavaScript/React
+- **Comments:** Explain *why*, not *what*. Reference relevant WORKFLOWS.md section when implementing business logic.
+
+---
+
+## Critical Compliance Reminders
+
+1. **Credit applications** (Workflow 4 in WORKFLOWS.md) contain SSN. GLBA Safeguards Rule applies. Encrypt, access-log, and restrict by role.
+2. **Photos and personal data** are PII â€” handle accordingly in storage and backups.
+3. **No real customer data in development environments** â€” use seed/test data only.
+4. **Audit log every:** login, role change, deal status change, credit app submission, document signing, user creation/deletion.
+
+---
+
+## What to Do When You Get Stuck
+
+If a request from Duane is unclear OR conflicts with WORKFLOWS.md:
+
+1. **Stop building.**
+2. **Quote the conflict** (e.g. "WORKFLOWS.md Step 4.1 says SSN is encrypted, but this request asks me to log it plaintext").
+3. **Ask Duane** to resolve before continuing.
+
+If something is missing from WORKFLOWS.md entirely:
+
+1. **Flag it** as an open question.
+2. **Suggest** what the workflow probably should be.
+3. **Wait for confirmation** before implementing.
+
+---
+
+## Open Decisions (See WORKFLOWS.md for full list)
+
+These are unanswered and may block certain builds. Confirm with Duane before assuming:
+
+1. Stock number format
+2. Photo storage (Supabase Storage vs CDN)
+3. AI agent provider (custom vs Podium/Conversica)
+4. SMS provider (Twilio / Telnyx)
+5. Email provider (SendGrid / Mailgun / SES)
+6. E-signature service (DocuSign / Dropbox Sign / native)
+7. Lender integration (DealerTrack / RouteOne / manual)
+8. CT DMV forms (PDF templates vs API)
+9. Salesperson pay plan structure
+10. QuickBooks/Xero integration phase
+11. Lead routing rules
+
+---
+
+## Commit Message Conventions
+
+- `feat:` â€” new feature
+- `fix:` â€” bug fix
+- `refactor:` â€” code restructuring, no behavior change
+- `docs:` â€” documentation only
+- `style:` â€” formatting, no logic change
+- `chore:` â€” dependency updates, config, etc.
+
+Example: `feat(inventory): add VIN decode auto-fill on stock-in form per WORKFLOWS 1.2`
+
+---
+
+_This file is read by Claude Code at the start of every session. Keep it short and authoritative. Detailed business logic belongs in `WORKFLOWS.md`._
+

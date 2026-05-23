@@ -6,12 +6,12 @@ import { Link } from 'react-router-dom'
 
 function MetricCard({ label, value, sub, icon: Icon, color }) {
   return (
-    <div className="bg-white rounded-xl border border-gray-100 p-5">
+    <div className="bg-[#141414] rounded-xl border border-[#2a2a2a] p-5">
       <div className="flex items-start justify-between">
         <div>
           <div className="text-xs text-gray-500 font-medium uppercase tracking-wide mb-1">{label}</div>
-          <div className="text-2xl font-bold text-gray-900">{value}</div>
-          {sub && <div className="text-xs text-gray-400 mt-1">{sub}</div>}
+          <div className="text-2xl font-bold text-white">{value}</div>
+          {sub && <div className="text-xs text-gray-500 mt-1">{sub}</div>}
         </div>
         <div className={`p-2.5 rounded-lg ${color}`}>
           <Icon size={18} className="text-white" />
@@ -35,37 +35,37 @@ export default function Dashboard() {
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-xl font-bold text-gray-900">Dashboard</h1>
+        <h1 className="text-xl font-bold text-white">Dashboard</h1>
         <p className="text-sm text-gray-500">{now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</p>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <MetricCard label="MTD Units" value={mtdDeals.length} sub="Funded this month" icon={TrendingUp} color="bg-blue-500" />
-        <MetricCard label="MTD Gross" value={`$${mtdGross.toLocaleString()}`} sub="Total gross profit" icon={DollarSign} color="bg-green-500" />
-        <MetricCard label="In Progress" value={inProgress} sub="Active deals" icon={FileText} color="bg-yellow-500" />
-        <MetricCard label="Available" value={available} sub="Units in stock" icon={Car} color="bg-purple-500" />
+        <MetricCard label="MTD Units" value={mtdDeals.length} sub="Funded this month" icon={TrendingUp} color="bg-[#E31837]" />
+        <MetricCard label="MTD Gross" value={`$${mtdGross.toLocaleString()}`} sub="Total gross profit" icon={DollarSign} color="bg-green-600" />
+        <MetricCard label="In Progress" value={inProgress} sub="Active deals" icon={FileText} color="bg-yellow-600" />
+        <MetricCard label="Available" value={available} sub="Units in stock" icon={Car} color="bg-purple-600" />
       </div>
-      <div className="bg-white rounded-xl border border-gray-100">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-          <h2 className="font-semibold text-gray-900">Recent deals</h2>
-          <Link to="/sales/deals" className="text-sm text-blue-500 hover:underline">View all →</Link>
+      <div className="bg-[#141414] rounded-xl border border-[#2a2a2a]">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[#2a2a2a]">
+          <h2 className="font-semibold text-white">Recent deals</h2>
+          <Link to="/sales/deals" className="text-sm text-[#E31837] hover:underline">View all →</Link>
         </div>
         {deals.length === 0 ? (
-          <div className="p-8 text-center text-gray-400 text-sm">No deals yet</div>
+          <div className="p-8 text-center text-gray-500 text-sm">No deals yet</div>
         ) : (
-          <div className="divide-y divide-gray-50">
+          <div className="divide-y divide-[#2a2a2a]">
             {deals.slice(0, 5).map(deal => (
               <Link key={deal.deal_num} to={`/sales/deals/${deal.deal_num}`}
-                className="flex items-center justify-between px-5 py-3.5 hover:bg-gray-50 transition-colors">
+                className="flex items-center justify-between px-5 py-3.5 hover:bg-[#1e1e1e] transition-colors">
                 <div>
-                  <div className="text-sm font-medium text-gray-900">{deal.customer_first} {deal.customer_last}</div>
-                  <div className="text-xs text-gray-400">{deal.vehicle_name} — {deal.deal_num}</div>
+                  <div className="text-sm font-medium text-white">{deal.customer_first} {deal.customer_last}</div>
+                  <div className="text-xs text-gray-500">{deal.vehicle_name} — {deal.deal_num}</div>
                 </div>
                 <div className="text-right">
                   <div className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-                    deal.status === 'Funded' ? 'bg-green-100 text-green-700' :
-                    deal.status === 'Pending' ? 'bg-blue-100 text-blue-700' : 'bg-yellow-100 text-yellow-700'
+                    deal.status === 'Funded' ? 'bg-green-900/30 text-green-400' :
+                    deal.status === 'Pending' ? 'bg-blue-900/30 text-blue-400' : 'bg-yellow-900/30 text-yellow-400'
                   }`}>{deal.status}</div>
-                  <div className="text-xs text-gray-400 mt-0.5">${(deal.total_gross || 0).toLocaleString()} gross</div>
+                  <div className="text-xs text-gray-500 mt-0.5">${(deal.total_gross || 0).toLocaleString()} gross</div>
                 </div>
               </Link>
             ))}

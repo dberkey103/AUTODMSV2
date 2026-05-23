@@ -47,18 +47,18 @@ export default function Dashboard() {
       <div className="bg-white rounded-xl border border-gray-100">
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
           <h2 className="font-semibold text-gray-900">Recent deals</h2>
-          <Link to="/deals" className="text-sm text-blue-500 hover:underline">View all →</Link>
+          <Link to="/sales/deals" className="text-sm text-blue-500 hover:underline">View all →</Link>
         </div>
         {deals.length === 0 ? (
           <div className="p-8 text-center text-gray-400 text-sm">No deals yet</div>
         ) : (
           <div className="divide-y divide-gray-50">
             {deals.slice(0, 5).map(deal => (
-              <Link key={deal.deal_num} to={`/deals/${deal.deal_num}`}
+              <Link key={deal.deal_num} to={`/sales/deals/${deal.deal_num}`}
                 className="flex items-center justify-between px-5 py-3.5 hover:bg-gray-50 transition-colors">
                 <div>
                   <div className="text-sm font-medium text-gray-900">{deal.customer_first} {deal.customer_last}</div>
-                  <div className="text-xs text-gray-400">{deal.vehicle_name} · {deal.deal_num}</div>
+                  <div className="text-xs text-gray-400">{deal.vehicle_name} — {deal.deal_num}</div>
                 </div>
                 <div className="text-right">
                   <div className={`text-xs font-medium px-2 py-0.5 rounded-full ${

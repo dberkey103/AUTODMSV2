@@ -37,7 +37,7 @@ export default function Deals() {
           <h1 className="text-xl font-bold text-gray-900">Deals</h1>
           <p className="text-sm text-gray-500">{deals.length} total deals</p>
         </div>
-        <button onClick={() => navigate('/deals/new')}
+        <button onClick={() => navigate('/sales/deals/new')}
           className="flex items-center gap-2 bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors">
           <Plus size={16} /> New Deal
         </button>
@@ -69,7 +69,7 @@ export default function Deals() {
         ) : filtered.length === 0 ? (
           <div className="p-12 text-center">
             <p className="text-gray-400 text-sm">No deals found</p>
-            <button onClick={() => navigate('/deals/new')}
+            <button onClick={() => navigate('/sales/deals/new')}
               className="mt-4 flex items-center gap-2 mx-auto bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors">
               <Plus size={14} /> Create First Deal
             </button>
@@ -92,7 +92,7 @@ export default function Deals() {
               {filtered.map(deal => (
                 <tr key={deal.deal_num}
                   className="hover:bg-gray-50 cursor-pointer transition-colors"
-                  onClick={() => navigate(`/deals/${deal.deal_num}`)}>
+                  onClick={() => navigate(`/sales/deals/${deal.deal_num}`)}>
                   <td className="px-5 py-3 text-sm font-mono font-medium text-blue-600">{deal.deal_num}</td>
                   <td className="px-4 py-3">
                     <div className="text-sm font-medium text-gray-900">{deal.customer_first} {deal.customer_last}</div>

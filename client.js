@@ -37,7 +37,25 @@ export const deleteUser = (id) => api.delete(`/api/users/${id}`)
 // Tax lookup
 export const lookupTax = (address) => api.get(`/api/tax/lookup?address=${encodeURIComponent(address)}`)
 
-// VIN decode
-export const decodeVin = (vin) => api.get(`/api/vin/${vin}`)
+// VIN decode — calls NHTSA directly from the browser, no backend involved
+export const decodeVin = async (vin) => {
+  const res = await fetch(
+    `https://vpic.nhtsa.dot.gov/api/vehicles/decodevin/${vin}?format=json`
+  )
+  if (!res.ok) throw new Error('VIN lookup failed')
+  const json = await res.json()
+  const get = (name) => {
+    const val = json.Results?.find(r => r.Variable === name)?.Value ?? ''
+    return val === 'Not Applicable' ? '' : val
+  }
+  return {
+    data: {
+      year:  get('Model Year'),
+      make:  get('Make'),
+      model: get('Model'),
+      trim:  get('Trim'),
+    },
+  }
+}
 
 export default api

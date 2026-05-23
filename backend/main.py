@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import auth, inventory, deals, service, users, tax, vin
+from . import auth, inventory, deals, service, users, tax, vin
 
 app = FastAPI(title="AutoDMS API", version="2.0")
 

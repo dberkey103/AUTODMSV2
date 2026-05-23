@@ -8,6 +8,9 @@ const SOURCES = ['Trade-in', 'Auction', 'Private Party', 'Dealer Trade', 'New']
 const EXT_COLORS = ['Black', 'White', 'Silver', 'Gray', 'Red', 'Blue', 'Green', 'Brown', 'Gold', 'Orange', 'Yellow', 'Other']
 const INT_COLORS = ['Black', 'Gray', 'Beige', 'Tan', 'Brown', 'White', 'Red', 'Other']
 
+const inputCls = 'w-full border border-[#2a2a2a] bg-[#1e1e1e] text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#E31837] transition-colors'
+const selectCls = 'w-full border border-[#2a2a2a] bg-[#1e1e1e] text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#E31837] transition-colors'
+
 function StepIndicator({ step }) {
   const steps = ['VIN Entry', 'Vehicle Details', 'Confirm']
   return (
@@ -16,15 +19,15 @@ function StepIndicator({ step }) {
         <React.Fragment key={idx}>
           <div className="flex items-center gap-2">
             <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
-              idx < step ? 'bg-green-500 text-white' :
-              idx === step ? 'bg-gray-900 text-white' :
-              'bg-gray-200 text-gray-500'
+              idx < step ? 'bg-green-600 text-white' :
+              idx === step ? 'bg-[#E31837] text-white' :
+              'bg-[#2a2a2a] text-gray-500'
             }`}>
               {idx < step ? <Check size={12} /> : idx + 1}
             </div>
-            <span className={`text-sm font-medium ${idx === step ? 'text-gray-900' : 'text-gray-400'}`}>{label}</span>
+            <span className={`text-sm font-medium ${idx === step ? 'text-white' : 'text-gray-500'}`}>{label}</span>
           </div>
-          {idx < steps.length - 1 && <div className="flex-1 h-px bg-gray-200" />}
+          {idx < steps.length - 1 && <div className="flex-1 h-px bg-[#2a2a2a]" />}
         </React.Fragment>
       ))}
     </div>
@@ -94,25 +97,25 @@ export default function StockIn() {
 
   const LabelInput = ({ label, field, type = 'text', required = false }) => (
     <div>
-      <label className="block text-xs font-medium text-gray-500 mb-1">
+      <label className="block text-xs font-medium text-gray-400 mb-1">
         {label}{required && <span className="text-red-500 ml-0.5">*</span>}
       </label>
       <input
         type={type}
         value={form[field] || ''}
         onChange={e => setField(field, e.target.value)}
-        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className={inputCls}
       />
     </div>
   )
 
   const LabelSelect = ({ label, field, options }) => (
     <div>
-      <label className="block text-xs font-medium text-gray-500 mb-1">{label}</label>
+      <label className="block text-xs font-medium text-gray-400 mb-1">{label}</label>
       <select
         value={form[field] || ''}
         onChange={e => setField(field, e.target.value)}
-        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className={selectCls}
       >
         <option value="">Select...</option>
         {options.map(o => <option key={o}>{o}</option>)}
@@ -125,21 +128,21 @@ export default function StockIn() {
   return (
     <div className="p-6 max-w-3xl mx-auto">
       <div className="flex items-center gap-3 mb-6">
-        <button onClick={() => navigate('/sales/inventory')} className="text-gray-400 hover:text-gray-700 transition-colors">
+        <button onClick={() => navigate('/sales/inventory')} className="text-gray-500 hover:text-gray-300 transition-colors">
           <ArrowLeft size={20} />
         </button>
         <div>
-          <h1 className="text-xl font-bold text-gray-900">Stock In Vehicle</h1>
-          <p className="text-sm text-gray-400">Add a vehicle to inventory</p>
+          <h1 className="text-xl font-bold text-white">Stock In Vehicle</h1>
+          <p className="text-sm text-gray-500">Add a vehicle to inventory</p>
         </div>
       </div>
 
       <StepIndicator step={step} />
 
       {step === 0 && (
-        <div className="bg-white rounded-xl border border-gray-100 p-6">
-          <h2 className="text-base font-semibold text-gray-900 mb-1">Enter Vehicle VIN</h2>
-          <p className="text-sm text-gray-400 mb-5">We'll automatically decode the year, make, model, and trim.</p>
+        <div className="bg-[#141414] rounded-xl border border-[#2a2a2a] p-6">
+          <h2 className="text-base font-semibold text-white mb-1">Enter Vehicle VIN</h2>
+          <p className="text-sm text-gray-500 mb-5">We'll automatically decode the year, make, model, and trim.</p>
           <div className="flex gap-3">
             <div className="flex-1">
               <input
@@ -147,19 +150,19 @@ export default function StockIn() {
                 onChange={e => { setVin(e.target.value.toUpperCase()); setVinError('') }}
                 placeholder="17-character VIN"
                 maxLength={17}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 uppercase"
+                className={`${inputCls} font-mono uppercase`}
               />
               {vinError && <p className="text-xs text-red-500 mt-1">{vinError}</p>}
-              <p className="text-xs text-gray-400 mt-1">{vin.length}/17 characters</p>
+              <p className="text-xs text-gray-600 mt-1">{vin.length}/17 characters</p>
             </div>
             <button onClick={decodeVIN} disabled={decoding}
-              className="flex items-center gap-2 bg-gray-900 text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-800 disabled:opacity-50 transition-colors">
+              className="flex items-center gap-2 bg-[#E31837] text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-[#c0001c] disabled:opacity-50 transition-colors">
               <Search size={14} /> {decoding ? 'Decoding...' : 'Decode VIN'}
             </button>
           </div>
           <div className="mt-4">
             <button onClick={() => { setForm(p => ({ ...p, vin })); setStep(1) }}
-              className="text-sm text-gray-400 hover:text-gray-600 underline transition-colors">
+              className="text-sm text-gray-500 hover:text-gray-300 underline transition-colors">
               Skip VIN decode, enter manually
             </button>
           </div>
@@ -168,16 +171,16 @@ export default function StockIn() {
 
       {step === 1 && (
         <div className="space-y-4">
-          <div className="bg-white rounded-xl border border-gray-100 p-5">
-            <h2 className="text-sm font-semibold text-gray-900 mb-4">Vehicle Information</h2>
+          <div className="bg-[#141414] rounded-xl border border-[#2a2a2a] p-5">
+            <h2 className="text-sm font-semibold text-white mb-4">Vehicle Information</h2>
             <div className="grid grid-cols-2 gap-4">
               <div className="col-span-2">
-                <label className="block text-xs font-medium text-gray-500 mb-1">VIN</label>
+                <label className="block text-xs font-medium text-gray-400 mb-1">VIN</label>
                 <input
                   value={form.vin}
                   onChange={e => setField('vin', e.target.value.toUpperCase())}
                   maxLength={17}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className={`${inputCls} font-mono`}
                 />
               </div>
               <LabelInput label="Stock #" field="stock" />
@@ -191,11 +194,11 @@ export default function StockIn() {
               <LabelSelect label="Source" field="source" options={SOURCES} />
               <LabelInput label="Purchase Date" field="purchase_date_raw" type="date" />
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">Status</label>
+                <label className="block text-xs font-medium text-gray-400 mb-1">Status</label>
                 <select
                   value={form.status}
                   onChange={e => setField('status', e.target.value)}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className={selectCls}
                 >
                   {['Available', 'In recon', 'Pending', 'Sold'].map(s => <option key={s}>{s}</option>)}
                 </select>
@@ -203,8 +206,8 @@ export default function StockIn() {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl border border-gray-100 p-5">
-            <h2 className="text-sm font-semibold text-gray-900 mb-4">Pricing & Floorplan</h2>
+          <div className="bg-[#141414] rounded-xl border border-[#2a2a2a] p-5">
+            <h2 className="text-sm font-semibold text-white mb-4">Pricing &amp; Floorplan</h2>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <LabelInput label="Purchase Cost ($)" field="cost" type="number" required />
@@ -212,7 +215,7 @@ export default function StockIn() {
               <div>
                 <LabelInput label="List Price ($)" field="price" type="number" />
                 {form.price && form.cost && (
-                  <p className={`text-xs mt-1 font-medium ${grossProfit >= 0 ? 'text-green-600' : 'text-red-500'}`}>
+                  <p className={`text-xs mt-1 font-medium ${grossProfit >= 0 ? 'text-green-400' : 'text-red-500'}`}>
                     Gross potential: {grossProfit >= 0 ? '' : '-'}${Math.abs(grossProfit).toLocaleString()}
                   </p>
                 )}
@@ -225,14 +228,14 @@ export default function StockIn() {
 
           <div className="flex gap-3">
             <button onClick={() => setStep(0)}
-              className="flex items-center gap-2 border border-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors">
+              className="flex items-center gap-2 border border-[#2a2a2a] text-gray-300 px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#1e1e1e] transition-colors">
               <ArrowLeft size={14} /> Back
             </button>
             <button onClick={() => {
               if (!form.year || !form.make || !form.model) { alert('Year, Make, and Model are required'); return }
               setStep(2)
             }}
-              className="flex items-center gap-2 bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors">
+              className="flex items-center gap-2 bg-[#E31837] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#c0001c] transition-colors">
               Continue <ArrowRight size={14} />
             </button>
           </div>
@@ -241,8 +244,8 @@ export default function StockIn() {
 
       {step === 2 && (
         <div className="space-y-4">
-          <div className="bg-white rounded-xl border border-gray-100 p-5">
-            <h2 className="text-sm font-semibold text-gray-900 mb-4">Confirm Vehicle Details</h2>
+          <div className="bg-[#141414] rounded-xl border border-[#2a2a2a] p-5">
+            <h2 className="text-sm font-semibold text-white mb-4">Confirm Vehicle Details</h2>
             <div className="grid grid-cols-2 gap-3 text-sm">
               {[
                 ['VIN', form.vin],
@@ -261,24 +264,24 @@ export default function StockIn() {
                 ['List Price', form.price ? `$${Number(form.price).toLocaleString()}` : '–'],
                 ['Gross Potential', form.price && form.cost ? `$${grossProfit.toLocaleString()}` : '–'],
               ].map(([label, value]) => (
-                <div key={label} className="flex justify-between py-1.5 border-b border-gray-50">
+                <div key={label} className="flex justify-between py-1.5 border-b border-[#2a2a2a]">
                   <span className="text-gray-500">{label}</span>
-                  <span className="font-medium text-gray-900">{value}</span>
+                  <span className="font-medium text-white">{value}</span>
                 </div>
               ))}
             </div>
           </div>
           <div className="flex gap-3">
             <button onClick={() => setStep(1)}
-              className="flex items-center gap-2 border border-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors">
+              className="flex items-center gap-2 border border-[#2a2a2a] text-gray-300 px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#1e1e1e] transition-colors">
               <ArrowLeft size={14} /> Back
             </button>
             <button onClick={handleSave} disabled={addMut.isPending}
-              className="flex items-center gap-2 bg-gray-900 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 disabled:opacity-50 transition-colors">
+              className="flex items-center gap-2 bg-[#E31837] text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-[#c0001c] disabled:opacity-50 transition-colors">
               <Check size={14} /> {addMut.isPending ? 'Saving...' : 'Stock In Vehicle'}
             </button>
             <button onClick={() => navigate('/sales/inventory')}
-              className="text-sm text-gray-400 hover:text-gray-600 px-3 py-2 transition-colors">
+              className="text-sm text-gray-500 hover:text-gray-300 px-3 py-2 transition-colors">
               Cancel
             </button>
           </div>

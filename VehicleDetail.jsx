@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
-import { useParams, useNavigate, Link } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { getInventory, updateVehicle, saveRO } from './client'
-import { ArrowLeft, Edit2, FileText, Send, Plus, Trash2, ExternalLink, Camera, ToggleLeft, ToggleRight, DollarSign, Calendar, Wrench } from 'lucide-react'
+import { getInventory, updateVehicle } from './client'
+import { ArrowLeft, Edit2, FileText, Send, Plus, Trash2, ExternalLink, Camera, ToggleLeft, ToggleRight, Calendar } from 'lucide-react'
 
 const statusColors = {
   Available: 'bg-green-100 text-green-700',
@@ -76,13 +76,13 @@ export default function VehicleDetail() {
     updateMut.mutate({ ...vehicle, listings: updated })
   }
 
-  const startDeal = () => navigate('/deals/new', { state: { vehicle } })
-  const sendToDesk = () => navigate('/desk', { state: { vehicle } })
+  const startDeal = () => navigate('/sales/deals/new', { state: { vehicle } })
+  const sendToDesk = () => navigate('/sales/desk', { state: { vehicle } })
 
   const Field = ({ label, value }) => (
     <div>
       <div className="text-xs text-gray-400 mb-1">{label}</div>
-      <div className="text-sm font-medium text-gray-900">{value || '—'}</div>
+      <div className="text-sm font-medium text-gray-900">{value || '–'}</div>
     </div>
   )
 
@@ -102,10 +102,9 @@ export default function VehicleDetail() {
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
-      {/* Header */}
       <div className="flex items-start justify-between mb-6">
         <div className="flex items-start gap-4">
-          <button onClick={() => navigate('/inventory')} className="mt-1 text-gray-400 hover:text-gray-700 transition-colors">
+          <button onClick={() => navigate('/sales/inventory')} className="mt-1 text-gray-400 hover:text-gray-700 transition-colors">
             <ArrowLeft size={20} />
           </button>
           <div>
@@ -136,9 +135,7 @@ export default function VehicleDetail() {
       </div>
 
       <div className="flex gap-6">
-        {/* Main content */}
         <div className="flex-1 min-w-0">
-          {/* Tabs */}
           <div className="flex gap-1 mb-5 border-b border-gray-100">
             {tabs.map(tab => (
               <button key={tab} onClick={() => setActiveTab(tab)}
@@ -148,7 +145,6 @@ export default function VehicleDetail() {
             ))}
           </div>
 
-          {/* Vehicle Info Tab */}
           {activeTab === 'info' && (
             <div className="bg-white rounded-xl border border-gray-100 p-5">
               {editing ? (
@@ -180,8 +176,7 @@ export default function VehicleDetail() {
                       {['Available', 'In recon', 'Pending', 'Sold'].map(s => <option key={s}>{s}</option>)}
                     </select>
                   </div>
-                  <button onClick={saveEdit}
-                    disabled={updateMut.isPending}
+                  <button onClick={saveEdit} disabled={updateMut.isPending}
                     className="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 disabled:opacity-50 transition-colors">
                     {updateMut.isPending ? 'Saving...' : 'Save Changes'}
                   </button>
@@ -194,21 +189,20 @@ export default function VehicleDetail() {
                   <Field label="Make" value={vehicle.make} />
                   <Field label="Model" value={vehicle.model} />
                   <Field label="Trim" value={vehicle.trim} />
-                  <Field label="Miles" value={vehicle.miles ? Number(vehicle.miles).toLocaleString() : '—'} />
+                  <Field label="Miles" value={vehicle.miles ? Number(vehicle.miles).toLocaleString() : '–'} />
                   <Field label="Ext Color" value={vehicle.ext_color} />
                   <Field label="Int Color" value={vehicle.int_color} />
                   <Field label="Source" value={vehicle.source} />
                   <Field label="Purchase Date" value={vehicle.purchase_date_raw} />
-                  <Field label="List Price" value={vehicle.price ? `$${Number(vehicle.price).toLocaleString()}` : '—'} />
-                  <Field label="Cost" value={vehicle.cost ? `$${Number(vehicle.cost).toLocaleString()}` : '—'} />
-                  <Field label="Floor Plan Amount" value={vehicle.fp_amount ? `$${Number(vehicle.fp_amount).toLocaleString()}` : '—'} />
-                  <Field label="Floor Plan Rate" value={vehicle.fp_rate ? `${vehicle.fp_rate}%` : '—'} />
+                  <Field label="List Price" value={vehicle.price ? `$${Number(vehicle.price).toLocaleString()}` : '–'} />
+                  <Field label="Cost" value={vehicle.cost ? `$${Number(vehicle.cost).toLocaleString()}` : '–'} />
+                  <Field label="Floor Plan Amount" value={vehicle.fp_amount ? `$${Number(vehicle.fp_amount).toLocaleString()}` : '–'} />
+                  <Field label="Floor Plan Rate" value={vehicle.fp_rate ? `${vehicle.fp_rate}%` : '–'} />
                 </div>
               )}
             </div>
           )}
 
-          {/* Recon Tab */}
           {activeTab === 'recon' && (
             <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
               <div className="p-4 border-b border-gray-100 flex items-center justify-between">
@@ -243,29 +237,18 @@ export default function VehicleDetail() {
                   </tbody>
                 </table>
               )}
-              {/* Add recon line */}
               <div className="p-4 border-t border-gray-100 flex gap-3">
-                <input
-                  placeholder="Description"
-                  value={newRecon.description}
+                <input placeholder="Description" value={newRecon.description}
                   onChange={e => setNewRecon(p => ({ ...p, description: e.target.value }))}
-                  className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <select
-                  value={newRecon.vendor}
-                  onChange={e => setNewRecon(p => ({ ...p, vendor: e.target.value }))}
-                  className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
+                  className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <select value={newRecon.vendor} onChange={e => setNewRecon(p => ({ ...p, vendor: e.target.value }))}
+                  className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                   <option value="">Vendor</option>
                   {RECON_VENDORS.map(v => <option key={v}>{v}</option>)}
                 </select>
-                <input
-                  type="number"
-                  placeholder="Amount"
-                  value={newRecon.amount}
+                <input type="number" placeholder="Amount" value={newRecon.amount}
                   onChange={e => setNewRecon(p => ({ ...p, amount: e.target.value }))}
-                  className="w-28 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                  className="w-28 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 <button onClick={addReconLine}
                   className="flex items-center gap-1.5 bg-gray-900 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors">
                   <Plus size={14} /> Add
@@ -274,7 +257,6 @@ export default function VehicleDetail() {
             </div>
           )}
 
-          {/* Photos Tab */}
           {activeTab === 'photos' && (
             <div className="bg-white rounded-xl border border-gray-100 p-5">
               <div className="flex items-center justify-between mb-4">
@@ -286,7 +268,7 @@ export default function VehicleDetail() {
               {vehicle.photos && vehicle.photos.length > 0 ? (
                 <div className="grid grid-cols-3 md:grid-cols-4 gap-3">
                   {vehicle.photos.map((url, idx) => (
-                    <div key={idx} className="aspect-video rounded-lg overflow-hidden bg-gray-100 relative group">
+                    <div key={idx} className="aspect-video rounded-lg overflow-hidden bg-gray-100 relative">
                       <img src={url} alt="" className="w-full h-full object-cover" />
                       {idx === 0 && (
                         <span className="absolute top-2 left-2 bg-gray-900 text-white text-xs px-2 py-0.5 rounded">Main</span>
@@ -304,7 +286,6 @@ export default function VehicleDetail() {
             </div>
           )}
 
-          {/* Listings Tab */}
           {activeTab === 'listings' && (
             <div className="bg-white rounded-xl border border-gray-100 p-5">
               <div className="text-sm font-medium text-gray-900 mb-4">Listing Sites</div>
@@ -338,7 +319,6 @@ export default function VehicleDetail() {
           )}
         </div>
 
-        {/* Financial Summary Sidebar */}
         <div className="w-64 flex-shrink-0 space-y-4">
           <div className="bg-white rounded-xl border border-gray-100 p-4">
             <div className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Financial Summary</div>

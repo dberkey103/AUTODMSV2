@@ -4,7 +4,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getDeals, saveDeal, updateDeal, getInventory, lookupTax } from './client'
 import { Save, Plus, Trash2, Search, ArrowLeft, Car, User, DollarSign } from 'lucide-react'
 
-// Payment calculation: PMT formula
 function calcPayment(principal, annualRate, months) {
   if (!principal || !months) return 0
   if (!annualRate || annualRate === 0) return principal / months
@@ -19,7 +18,7 @@ function generateDealNum() {
 }
 
 const FI_PRODUCTS = ['GAP Insurance', 'Extended Warranty', 'Paint Protection', 'Tire & Wheel', 'Key Replacement', 'Windshield Protection', 'Prepaid Maintenance']
-const LENDERS = ['Chase Auto', 'Capital One', 'TD Auto Finance', 'Ally Financial', 'Wells Fargo', 'Credit Acceptance', 'Westlake Financial', 'Other']
+const LENDERS = ['Chase Auto', 'Capital One', 'TDA Auto Finance', 'Ally Financial', 'Wells Fargo', 'Credit Acceptance', 'Westlake Financial', 'Other']
 const TERMS = [24, 36, 48, 60, 72, 84]
 
 const StatusBadge = ({ status }) => {
@@ -50,18 +49,14 @@ export default function DealDesk() {
   const [customer, setCustomer] = useState({
     first: '', last: '', phone: '', email: '', address: '', city: '', state: '', zip: '', dob: '', dl: ''
   })
-
   const [vehicle, setVehicle] = useState(location.state?.vehicle || null)
-
   const [pricing, setPricing] = useState({
     sell: '', doc_fee: '599', discount: '0', trade_acv: '', trade_payoff: '',
     tax_rate: '6.35', reg: '180', emission: '20'
   })
-
   const [finance, setFinance] = useState({
     down: '', term: '60', buy_rate: '', sell_rate: '', lender: ''
   })
-
   const [fiProducts, setFiProducts] = useState([])
   const [notes, setNotes] = useState('')
 
@@ -83,32 +78,21 @@ export default function DealDesk() {
         setStatus(existing.status || 'In progress')
         setDealType(existing.deal_type || 'Cash')
         setCustomer({
-          first: existing.customer_first || '',
-          last: existing.customer_last || '',
-          phone: existing.customer_phone || '',
-          email: existing.customer_email || '',
-          address: existing.customer_addr || '',
-          city: existing.customer_city || '',
-          state: existing.customer_state || '',
-          zip: existing.customer_zip || '',
-          dob: existing.customer_dob || '',
-          dl: existing.customer_dl || '',
+          first: existing.customer_first || '', last: existing.customer_last || '',
+          phone: existing.customer_phone || '', email: existing.customer_email || '',
+          address: existing.customer_addr || '', city: existing.customer_city || '',
+          state: existing.customer_state || '', zip: existing.customer_zip || '',
+          dob: existing.customer_dob || '', dl: existing.customer_dl || '',
         })
         setPricing({
-          sell: existing.sell || '',
-          doc_fee: existing.doc || '599',
-          discount: existing.discount || '0',
-          trade_acv: existing.trade_acv || '',
-          trade_payoff: existing.trade_payoff || '',
-          tax_rate: existing.tax_rate || '6.35',
-          reg: existing.reg || '180',
-          emission: existing.emission || '20',
+          sell: existing.sell || '', doc_fee: existing.doc || '599',
+          discount: existing.discount || '0', trade_acv: existing.trade_acv || '',
+          trade_payoff: existing.trade_payoff || '', tax_rate: existing.tax_rate || '6.35',
+          reg: existing.reg || '180', emission: existing.emission || '20',
         })
         setFinance({
-          down: existing.f_down || '',
-          term: existing.f_term || '60',
-          buy_rate: existing.f_buy_rate || '',
-          sell_rate: existing.f_sell_rate || '',
+          down: existing.f_down || '', term: existing.f_term || '60',
+          buy_rate: existing.f_buy_rate || '', sell_rate: existing.f_sell_rate || '',
           lender: existing.lender || '',
         })
         setFiProducts(existing.fi_products || [])
@@ -126,7 +110,6 @@ export default function DealDesk() {
     }
   }, [deals, dealNum, isNew])
 
-  // Calculations
   const sell = parseFloat(pricing.sell) || 0
   const docFee = parseFloat(pricing.doc_fee) || 0
   const discount = parseFloat(pricing.discount) || 0
@@ -178,7 +161,7 @@ export default function DealDesk() {
       qc.invalidateQueries(['deals'])
       setSaved(true)
       setTimeout(() => setSaved(false), 2000)
-      if (isNew && res.data?.deal_num) navigate(`/deals/${res.data.deal_num}`, { replace: true })
+      if (isNew && res.data?.deal_num) navigate(`/sales/deals/${res.data.deal_num}`, { replace: true })
     }
   })
 
@@ -225,10 +208,9 @@ export default function DealDesk() {
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
-      {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <button onClick={() => navigate('/deals')} className="text-gray-400 hover:text-gray-700 transition-colors">
+          <button onClick={() => navigate('/sales/deals')} className="text-gray-400 hover:text-gray-700 transition-colors">
             <ArrowLeft size={20} />
           </button>
           <div>
@@ -252,9 +234,7 @@ export default function DealDesk() {
       </div>
 
       <div className="flex gap-6">
-        {/* Main form */}
         <div className="flex-1 min-w-0 space-y-5">
-          {/* Customer */}
           <div className="bg-white rounded-xl border border-gray-100 p-5">
             <div className="flex items-center gap-2 mb-4">
               <User size={16} className="text-gray-400" />
@@ -284,7 +264,6 @@ export default function DealDesk() {
             </div>
           </div>
 
-          {/* Vehicle */}
           <div className="bg-white rounded-xl border border-gray-100 p-5">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
@@ -321,16 +300,13 @@ export default function DealDesk() {
             {vehicle ? (
               <div className="bg-gray-50 rounded-lg p-3">
                 <div className="text-sm font-semibold text-gray-900">{vehicle.year} {vehicle.make} {vehicle.model} {vehicle.trim}</div>
-                <div className="text-xs text-gray-500 mt-1">
-                  Stock #{vehicle.stock} &nbsp;·&nbsp; {vehicle.vin} &nbsp;·&nbsp; {Number(vehicle.miles || 0).toLocaleString()} mi
-                </div>
+                <div className="text-xs text-gray-500 mt-1">Stock #{vehicle.stock} · {vehicle.vin} · {Number(vehicle.miles || 0).toLocaleString()} mi</div>
               </div>
             ) : (
-              <div className="text-sm text-gray-400 italic">No vehicle selected — click "Select Vehicle" above</div>
+              <div className="text-sm text-gray-400 italic">No vehicle selected</div>
             )}
           </div>
 
-          {/* Deal Type & Pricing */}
           <div className="bg-white rounded-xl border border-gray-100 p-5">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
@@ -340,7 +316,9 @@ export default function DealDesk() {
               <div className="flex rounded-lg border border-gray-200 overflow-hidden">
                 {['Cash', 'Finance'].map(t => (
                   <button key={t} onClick={() => setDealType(t)}
-                    className={`px-4 py-1.5 text-xs font-medium transition-colors ${dealType === t ? 'bg-gray-900 text-white' : 'text-gray-600 hover:bg-gray-50'}`}>{t}</button>
+                    className={`px-4 py-1.5 text-xs font-medium transition-colors ${dealType === t ? 'bg-gray-900 text-white' : 'text-gray-600 hover:bg-gray-50'}`}>
+                    {t}
+                  </button>
                 ))}
               </div>
             </div>
@@ -373,8 +351,7 @@ export default function DealDesk() {
                 tradeAcv > 0 ? ['Trade Allowance', `-$${tradeAcv.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, 'text-red-500'] : null,
               ].filter(Boolean).map(([label, val, cls = '']) => (
                 <div key={label} className="flex justify-between text-gray-600">
-                  <span>{label}</span>
-                  <span className={cls}>{val}</span>
+                  <span>{label}</span><span className={cls}>{val}</span>
                 </div>
               ))}
               <div className="flex justify-between font-semibold text-gray-900 border-t border-gray-200 pt-1.5 mt-1.5">
@@ -384,7 +361,6 @@ export default function DealDesk() {
             </div>
           </div>
 
-          {/* Finance */}
           {dealType === 'Finance' && (
             <div className="bg-white rounded-xl border border-gray-100 p-5">
               <h2 className="text-sm font-semibold text-gray-900 mb-4">Financing</h2>
@@ -425,24 +401,20 @@ export default function DealDesk() {
             </div>
           )}
 
-          {/* F&I Products */}
           <div className="bg-white rounded-xl border border-gray-100 p-5">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-sm font-semibold text-gray-900">F&I Products</h2>
+              <h2 className="text-sm font-semibold text-gray-900">F&amp;I Products</h2>
               <button onClick={addFiProduct}
                 className="flex items-center gap-1.5 text-xs text-blue-600 border border-blue-200 px-2.5 py-1 rounded-lg hover:bg-blue-50 transition-colors">
                 <Plus size={12} /> Add Product
               </button>
             </div>
             {fiProducts.length === 0 ? (
-              <div className="text-sm text-gray-400 italic text-center py-4">No F&I products added</div>
+              <div className="text-sm text-gray-400 italic text-center py-4">No F&amp;I products added</div>
             ) : (
               <div className="space-y-2">
                 <div className="grid grid-cols-5 gap-2 text-xs font-medium text-gray-500 mb-1 px-1">
-                  <div className="col-span-2">Product</div>
-                  <div>Term</div>
-                  <div>Cost</div>
-                  <div>Price</div>
+                  <div className="col-span-2">Product</div><div>Term</div><div>Cost</div><div>Price</div>
                 </div>
                 {fiProducts.map((p, idx) => (
                   <div key={idx} className="grid grid-cols-5 gap-2 items-center">
@@ -467,14 +439,13 @@ export default function DealDesk() {
                   </div>
                 ))}
                 <div className="flex justify-between text-xs font-semibold text-gray-700 pt-2 border-t border-gray-100 px-1">
-                  <span>Total F&I Income</span>
+                  <span>Total F&amp;I Income</span>
                   <span>${fiTotal.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
                 </div>
               </div>
             )}
           </div>
 
-          {/* Notes */}
           <div className="bg-white rounded-xl border border-gray-100 p-5">
             <h2 className="text-sm font-semibold text-gray-900 mb-3">Notes</h2>
             <textarea value={notes} onChange={e => setNotes(e.target.value)} rows={3}
@@ -483,9 +454,7 @@ export default function DealDesk() {
           </div>
         </div>
 
-        {/* Deal Summary Sidebar */}
         <div className="w-64 flex-shrink-0 space-y-4">
-          {/* Payment hero */}
           <div className="bg-gray-900 rounded-xl p-5 text-white">
             <div className="text-xs text-gray-400 uppercase tracking-wide mb-3">
               {dealType === 'Finance' ? 'Monthly Payment' : 'Out-the-Door Price'}
@@ -493,10 +462,9 @@ export default function DealDesk() {
             {dealType === 'Finance' ? (
               <>
                 <div className="text-3xl font-bold">
-                  ${monthlyPayment.toFixed(2)}
-                  <span className="text-sm font-normal text-gray-400">/mo</span>
+                  ${monthlyPayment.toFixed(2)}<span className="text-sm font-normal text-gray-400">/mo</span>
                 </div>
-                <div className="text-xs text-gray-400 mt-1">{finance.term} mo &nbsp;·&nbsp; {finance.sell_rate || '—'}% APR</div>
+                <div className="text-xs text-gray-400 mt-1">{finance.term} mo · {finance.sell_rate || '–'}% APR</div>
                 <div className="mt-3 text-sm text-gray-300">OTD: ${otd.toLocaleString('en-US', { minimumFractionDigits: 2 })}</div>
               </>
             ) : (
@@ -507,14 +475,10 @@ export default function DealDesk() {
             )}
           </div>
 
-          {/* Gross summary */}
           <div className="bg-white rounded-xl border border-gray-100 p-4">
             <div className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Deal Summary</div>
             <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-gray-500">Sell Price</span>
-                <span className="font-medium">${sell.toLocaleString()}</span>
-              </div>
+              <div className="flex justify-between"><span className="text-gray-500">Sell Price</span><span className="font-medium">${sell.toLocaleString()}</span></div>
               {tradeNet !== 0 && (
                 <div className="flex justify-between">
                   <span className="text-gray-500">Trade Net</span>
@@ -523,38 +487,23 @@ export default function DealDesk() {
                   </span>
                 </div>
               )}
-              <div className="flex justify-between">
-                <span className="text-gray-500">Doc Fee</span>
-                <span className="font-medium">${docFee.toLocaleString()}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">F&I Income</span>
-                <span className="font-medium">${fiTotal.toLocaleString()}</span>
-              </div>
+              <div className="flex justify-between"><span className="text-gray-500">Doc Fee</span><span className="font-medium">${docFee.toLocaleString()}</span></div>
+              <div className="flex justify-between"><span className="text-gray-500">F&amp;I Income</span><span className="font-medium">${fiTotal.toLocaleString()}</span></div>
               {dealType === 'Finance' && reserve > 0 && (
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Reserve</span>
-                  <span className="font-medium">${reserve.toFixed(0)}</span>
-                </div>
+                <div className="flex justify-between"><span className="text-gray-500">Reserve</span><span className="font-medium">${reserve.toFixed(0)}</span></div>
               )}
               <div className="border-t border-gray-100 pt-2 mt-2 space-y-1.5">
                 <div className="flex justify-between text-xs">
                   <span className="text-gray-500">Front Gross</span>
-                  <span className={`font-semibold ${frontGross >= 0 ? 'text-green-600' : 'text-red-500'}`}>
-                    ${frontGross.toLocaleString()}
-                  </span>
+                  <span className={`font-semibold ${frontGross >= 0 ? 'text-green-600' : 'text-red-500'}`}>${frontGross.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between text-xs">
                   <span className="text-gray-500">Back Gross</span>
-                  <span className={`font-semibold ${backGross >= 0 ? 'text-green-600' : 'text-red-500'}`}>
-                    ${backGross.toFixed(0)}
-                  </span>
+                  <span className={`font-semibold ${backGross >= 0 ? 'text-green-600' : 'text-red-500'}`}>${backGross.toFixed(0)}</span>
                 </div>
                 <div className="flex justify-between font-bold text-base border-t border-gray-100 pt-2">
                   <span>Total Gross</span>
-                  <span className={totalGross >= 0 ? 'text-green-600' : 'text-red-500'}>
-                    ${totalGross.toLocaleString()}
-                  </span>
+                  <span className={totalGross >= 0 ? 'text-green-600' : 'text-red-500'}>${totalGross.toLocaleString()}</span>
                 </div>
               </div>
             </div>
@@ -564,10 +513,7 @@ export default function DealDesk() {
             <div className="bg-white rounded-xl border border-gray-100 p-4">
               <div className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Vehicle Cost</div>
               <div className="space-y-1.5 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Purchase Cost</span>
-                  <span>${(vehicle.cost || 0).toLocaleString()}</span>
-                </div>
+                <div className="flex justify-between"><span className="text-gray-500">Purchase Cost</span><span>${(vehicle.cost || 0).toLocaleString()}</span></div>
                 {vehicle.recon && vehicle.recon.length > 0 && (
                   <div className="flex justify-between">
                     <span className="text-gray-500">Recon</span>

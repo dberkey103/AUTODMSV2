@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from . import auth, inventory, deals, service, users, tax, vin
 
-app = FastAPI(title="AutoDMS API", version="2.0")
+app = FastAPI(title="CARSATION DMS API", version="2.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -23,4 +23,4 @@ app.include_router(vin.router, prefix="/api/vin", tags=["vin"])
 
 @app.get("/")
 def root():
-    return {"status": "AutoDMS API v2 running"}
+    return {"status": "CARSATION DMS API running"}

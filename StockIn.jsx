@@ -50,7 +50,7 @@ export default function StockIn() {
     mutationFn: addVehicle,
     onSuccess: (res) => {
       qc.invalidateQueries(['inventory'])
-      navigate(`/inventory/${res.data.id || res.data.vehicle_id || ''}`)
+      navigate(`/sales/inventory/${res.data.id || res.data.vehicle_id || ''}`)
     }
   })
 
@@ -64,17 +64,16 @@ export default function StockIn() {
       const res = await decodeVin(vin)
       const d = res.data
       setForm(p => ({
-        ...p,
-        vin: vin,
+        ...p, vin,
         year: d.year || p.year,
         make: d.make || p.make,
         model: d.model || p.model,
         trim: d.trim || p.trim,
       }))
       setStep(1)
-    } catch (err) {
+    } catch {
       setVinError('Could not decode VIN. Please enter details manually.')
-      setForm(p => ({ ...p, vin: vin }))
+      setForm(p => ({ ...p, vin }))
       setStep(1)
     } finally {
       setDecoding(false)
@@ -126,7 +125,7 @@ export default function StockIn() {
   return (
     <div className="p-6 max-w-3xl mx-auto">
       <div className="flex items-center gap-3 mb-6">
-        <button onClick={() => navigate('/inventory')} className="text-gray-400 hover:text-gray-700 transition-colors">
+        <button onClick={() => navigate('/sales/inventory')} className="text-gray-400 hover:text-gray-700 transition-colors">
           <ArrowLeft size={20} />
         </button>
         <div>
@@ -137,7 +136,6 @@ export default function StockIn() {
 
       <StepIndicator step={step} />
 
-      {/* Step 0: VIN Entry */}
       {step === 0 && (
         <div className="bg-white rounded-xl border border-gray-100 p-6">
           <h2 className="text-base font-semibold text-gray-900 mb-1">Enter Vehicle VIN</h2>
@@ -147,7 +145,7 @@ export default function StockIn() {
               <input
                 value={vin}
                 onChange={e => { setVin(e.target.value.toUpperCase()); setVinError('') }}
-                placeholder="17-character VIN (e.g. 1HGBH41JXMN109186)"
+                placeholder="17-character VIN"
                 maxLength={17}
                 className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 uppercase"
               />
@@ -160,7 +158,7 @@ export default function StockIn() {
             </button>
           </div>
           <div className="mt-4">
-            <button onClick={() => { setForm(p => ({ ...p, vin: vin })); setStep(1) }}
+            <button onClick={() => { setForm(p => ({ ...p, vin })); setStep(1) }}
               className="text-sm text-gray-400 hover:text-gray-600 underline transition-colors">
               Skip VIN decode, enter manually
             </button>
@@ -168,7 +166,6 @@ export default function StockIn() {
         </div>
       )}
 
-      {/* Step 1: Vehicle Details */}
       {step === 1 && (
         <div className="space-y-4">
           <div className="bg-white rounded-xl border border-gray-100 p-5">
@@ -242,7 +239,6 @@ export default function StockIn() {
         </div>
       )}
 
-      {/* Step 2: Confirm */}
       {step === 2 && (
         <div className="space-y-4">
           <div className="bg-white rounded-xl border border-gray-100 p-5">
@@ -254,16 +250,16 @@ export default function StockIn() {
                 ['Year', form.year],
                 ['Make', form.make],
                 ['Model', form.model],
-                ['Trim', form.trim || '—'],
-                ['Miles', form.miles ? Number(form.miles).toLocaleString() : '—'],
-                ['Ext Color', form.ext_color || '—'],
-                ['Int Color', form.int_color || '—'],
-                ['Source', form.source || '—'],
-                ['Purchase Date', form.purchase_date_raw || '—'],
+                ['Trim', form.trim || '–'],
+                ['Miles', form.miles ? Number(form.miles).toLocaleString() : '–'],
+                ['Ext Color', form.ext_color || '–'],
+                ['Int Color', form.int_color || '–'],
+                ['Source', form.source || '–'],
+                ['Purchase Date', form.purchase_date_raw || '–'],
                 ['Status', form.status],
-                ['Purchase Cost', form.cost ? `$${Number(form.cost).toLocaleString()}` : '—'],
-                ['List Price', form.price ? `$${Number(form.price).toLocaleString()}` : '—'],
-                ['Gross Potential', form.price && form.cost ? `$${grossProfit.toLocaleString()}` : '—'],
+                ['Purchase Cost', form.cost ? `$${Number(form.cost).toLocaleString()}` : '–'],
+                ['List Price', form.price ? `$${Number(form.price).toLocaleString()}` : '–'],
+                ['Gross Potential', form.price && form.cost ? `$${grossProfit.toLocaleString()}` : '–'],
               ].map(([label, value]) => (
                 <div key={label} className="flex justify-between py-1.5 border-b border-gray-50">
                   <span className="text-gray-500">{label}</span>
@@ -281,7 +277,7 @@ export default function StockIn() {
               className="flex items-center gap-2 bg-gray-900 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 disabled:opacity-50 transition-colors">
               <Check size={14} /> {addMut.isPending ? 'Saving...' : 'Stock In Vehicle'}
             </button>
-            <button onClick={() => navigate('/inventory')}
+            <button onClick={() => navigate('/sales/inventory')}
               className="text-sm text-gray-400 hover:text-gray-600 px-3 py-2 transition-colors">
               Cancel
             </button>

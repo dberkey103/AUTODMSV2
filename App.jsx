@@ -58,6 +58,7 @@ class ErrorBoundary extends Component {
   }
 }
 
+// Shows spinner while auth check is in flight, then redirects to /login if not authenticated
 function PrivateRoute() {
   const { user, loading } = useAuth()
   if (loading) return (
@@ -68,6 +69,7 @@ function PrivateRoute() {
   return user ? <Outlet /> : <Navigate to="/login" replace />
 }
 
+// Shows spinner while auth check is in flight, then redirects to /select if already authenticated
 function PublicRoute() {
   const { user, loading } = useAuth()
   if (loading) return (
@@ -85,9 +87,12 @@ export default function App() {
         <AuthProvider>
           <BrowserRouter>
             <Routes>
+              {/* Unauthenticated entry point — /login redirects to /select if already logged in */}
               <Route element={<PublicRoute />}>
                 <Route path="/login" element={<Login />} />
               </Route>
+
+              {/* All protected routes — redirect to /login if not authenticated */}
               <Route element={<PrivateRoute />}>
                 <Route path="/select" element={<ModuleSelector />} />
                 <Route path="/sales" element={<Layout module="sales" />}>
@@ -107,8 +112,10 @@ export default function App() {
                   <Route path="new" element={<ROForm />} />
                   <Route path=":id" element={<ROForm />} />
                 </Route>
-                <Route path="/" element={<Navigate to="/select" replace />} />
               </Route>
+
+              {/* Root and any unmatched path both go to /login — PublicRoute handles the auth check there */}
+              <Route path="/" element={<Navigate to="/login" replace />} />
               <Route path="*" element={<Navigate to="/login" replace />} />
             </Routes>
           </BrowserRouter>

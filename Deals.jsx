@@ -5,10 +5,10 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Plus, Search } from 'lucide-react'
 
 const statusColors = {
-  Funded: 'bg-green-100 text-green-700',
-  Pending: 'bg-blue-100 text-blue-700',
-  'In progress': 'bg-yellow-100 text-yellow-700',
-  Dead: 'bg-gray-100 text-gray-500',
+  Funded: 'bg-green-900/30 text-green-400',
+  Pending: 'bg-blue-900/30 text-blue-400',
+  'In progress': 'bg-yellow-900/30 text-yellow-400',
+  Dead: 'bg-[#2a2a2a] text-gray-500',
 }
 
 const FILTERS = ['All', 'In progress', 'Pending', 'Funded', 'Dead']
@@ -34,50 +34,50 @@ export default function Deals() {
     <div className="p-6 max-w-6xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl font-bold text-gray-900">Deals</h1>
+          <h1 className="text-xl font-bold text-white">Deals</h1>
           <p className="text-sm text-gray-500">{deals.length} total deals</p>
         </div>
         <button onClick={() => navigate('/sales/deals/new')}
-          className="flex items-center gap-2 bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors">
+          className="flex items-center gap-2 bg-[#E31837] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#c0001c] transition-colors">
           <Plus size={16} /> New Deal
         </button>
       </div>
 
       <div className="flex gap-3 mb-5">
         <div className="relative flex-1 max-w-xs">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search deals..."
-            className="pl-8 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="pl-8 w-full border border-[#2a2a2a] bg-[#1e1e1e] text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#E31837] transition-colors placeholder-gray-600"
           />
         </div>
         <div className="flex gap-2">
           {FILTERS.map(f => (
             <button key={f} onClick={() => setFilter(f)}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                filter === f ? 'bg-gray-900 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
+                filter === f ? 'bg-[#E31837] text-white' : 'bg-[#1e1e1e] border border-[#2a2a2a] text-gray-400 hover:bg-[#2a2a2a]'
               }`}>{f}</button>
           ))}
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+      <div className="bg-[#141414] rounded-xl border border-[#2a2a2a] overflow-hidden">
         {isLoading ? (
-          <div className="p-8 text-center text-gray-400">Loading...</div>
+          <div className="p-8 text-center text-gray-500">Loading...</div>
         ) : filtered.length === 0 ? (
           <div className="p-12 text-center">
-            <p className="text-gray-400 text-sm">No deals found</p>
+            <p className="text-gray-500 text-sm">No deals found</p>
             <button onClick={() => navigate('/sales/deals/new')}
-              className="mt-4 flex items-center gap-2 mx-auto bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors">
+              className="mt-4 flex items-center gap-2 mx-auto bg-[#E31837] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#c0001c] transition-colors">
               <Plus size={14} /> Create First Deal
             </button>
           </div>
         ) : (
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-100">
+              <tr className="border-b border-[#2a2a2a] bg-[#0f0f0f]">
                 <th className="text-left text-xs font-medium text-gray-500 px-5 py-3">Deal #</th>
                 <th className="text-left text-xs font-medium text-gray-500 px-4 py-3">Customer</th>
                 <th className="text-left text-xs font-medium text-gray-500 px-4 py-3">Vehicle</th>
@@ -88,33 +88,33 @@ export default function Deals() {
                 <th className="text-left text-xs font-medium text-gray-500 px-4 py-3">Date</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-[#2a2a2a]">
               {filtered.map(deal => (
                 <tr key={deal.deal_num}
-                  className="hover:bg-gray-50 cursor-pointer transition-colors"
+                  className="hover:bg-[#1e1e1e] cursor-pointer transition-colors"
                   onClick={() => navigate(`/sales/deals/${deal.deal_num}`)}>
-                  <td className="px-5 py-3 text-sm font-mono font-medium text-blue-600">{deal.deal_num}</td>
+                  <td className="px-5 py-3 text-sm font-mono font-medium text-[#E31837]">{deal.deal_num}</td>
                   <td className="px-4 py-3">
-                    <div className="text-sm font-medium text-gray-900">{deal.customer_first} {deal.customer_last}</div>
-                    <div className="text-xs text-gray-400">{deal.customer_phone}</div>
+                    <div className="text-sm font-medium text-white">{deal.customer_first} {deal.customer_last}</div>
+                    <div className="text-xs text-gray-500">{deal.customer_phone}</div>
                   </td>
                   <td className="px-4 py-3">
-                    <div className="text-sm text-gray-900">{deal.vehicle_name}</div>
-                    <div className="text-xs text-gray-400">{deal.stock}</div>
+                    <div className="text-sm text-gray-200">{deal.vehicle_name}</div>
+                    <div className="text-xs text-gray-500">{deal.stock}</div>
                   </td>
                   <td className="px-4 py-3">
                     <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-                      deal.deal_type === 'Finance' ? 'bg-purple-100 text-purple-700' : 'bg-gray-100 text-gray-600'
+                      deal.deal_type === 'Finance' ? 'bg-purple-900/30 text-purple-400' : 'bg-[#2a2a2a] text-gray-400'
                     }`}>{deal.deal_type || 'Cash'}</span>
                   </td>
                   <td className="px-4 py-3">
-                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${statusColors[deal.status] || 'bg-gray-100 text-gray-500'}`}>
+                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${statusColors[deal.status] || 'bg-[#2a2a2a] text-gray-500'}`}>
                       {deal.status}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-sm font-medium text-right">${(deal.sell || 0).toLocaleString()}</td>
-                  <td className="px-4 py-3 text-sm font-semibold text-right text-green-600">${(deal.total_gross || 0).toLocaleString()}</td>
-                  <td className="px-4 py-3 text-xs text-gray-400">
+                  <td className="px-4 py-3 text-sm font-medium text-white text-right">${(deal.sell || 0).toLocaleString()}</td>
+                  <td className="px-4 py-3 text-sm font-semibold text-right text-green-400">${(deal.total_gross || 0).toLocaleString()}</td>
+                  <td className="px-4 py-3 text-xs text-gray-500">
                     {deal.updated_at ? new Date(deal.updated_at).toLocaleDateString() : '—'}
                   </td>
                 </tr>

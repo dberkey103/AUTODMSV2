@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 from typing import Optional
+from passlib.hash import bcrypt as bcrypt_ctx
 from .database import supabase
 
 router = APIRouter()
@@ -11,7 +12,7 @@ class UserRequest(BaseModel):
     last: str
     username: str
     password: Optional[str] = ""
-    role: str = "sales"
+    role: str = "salesperson"
     active: bool = True
 
 @router.get("/")
@@ -31,7 +32,11 @@ def save_user(user: UserRequest, request: Request):
     if data.get("id"):
         if not data.get("password"):
             data.pop("password")
+        else:
+            data["password"] = bcrypt_ctx.hash(data["password"])
         res = supabase.table("users").update(data).eq("id", data["id"]).execute()
     else:
+        if data.get("password"):
+            data["password"] = bcrypt_ctx.hash(data["password"])
         res = supabase.table("users").insert(data).execute()
     return res.data[0]

@@ -78,7 +78,7 @@ A reconditioning plan is decided based on the write-up.
 - **In-house service** — assign to internal technician(s); creates an internal RO.
 - **Body shop / outsource** — send to external vendor (paint, body, glass, upholstery).
 - **Parts ordering** — track PO #, vendor, cost, ETA.
-- **Detail** — interior/exterior detail before photos.
+- **Detail** — interior/exterior detail before photos. Assigned to a user with the **Detailer** role; creates a detail work order line on the recon record.
 
 **Data captured for each recon line:** description, vendor/technician assigned, status (pending / in progress / complete), cost (parts + labor), date completed.
 
@@ -87,6 +87,8 @@ All recon costs roll up into the vehicle's **total cost basis** alongside acquis
 ### Step 1.6 — Vehicle is Frontline-Ready
 
 When all recon is complete and final QC passes, status flips to **`Frontline Ready`** / **`Ready for Photos`**.
+
+Detail work order (assigned to Detailer role) must be marked **complete** before status can advance to Frontline Ready.
 
 ### Step 1.7 — Photograph Vehicle
 

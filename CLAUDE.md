@@ -51,7 +51,7 @@ When a task is ambiguous, when a data field is missing, or when something isn't 
 ## Authentication & Roles
 
 - **Test login:** `admin` / `admin123`
-- **Roles (RBAC):** Owner/Admin, Manager, Salesperson, Service Advisor, Technician, Accounting, Read Only
+- **Roles (RBAC):** Owner/Admin, Manager, Salesperson, Service Advisor, Technician, Detailer, Accounting, Read Only
 - **Password storage:** bcrypt â€” never plaintext
 - **All sensitive actions must be logged to the activity log table**
 

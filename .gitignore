@@ -1,0 +1,23 @@
+# One-time tooling — never commit
+inspect_users.py
+dry_run_output.txt
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.env
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+
+# Node / frontend
+node_modules/
+dist/
+.cache/
+
+# OS
+.DS_Store
+Thumbs.db
